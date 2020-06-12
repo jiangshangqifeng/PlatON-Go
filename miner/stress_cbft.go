@@ -77,7 +77,7 @@ func main() {
 		}
 		// Connect the node to al the previous ones
 		for _, enode := range enodes {
-			enode, err := discover.ParseNode(enode)
+			enode, err := enode.ParseV4(enode)
 			if err != nil {
 				panic(err)
 			}

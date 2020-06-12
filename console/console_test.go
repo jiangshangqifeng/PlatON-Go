@@ -110,7 +110,7 @@ func newTester(t *testing.T, confOverride func(*eth.Config)) *tester {
 	//}
 	ethConf := &eth.DefaultConfig
 	ethConf.Genesis = core.DefaultGrapeGenesisBlock()
-	n, _ := discover.ParseNode("enode://73f48a69ae73b85c0a578258954936300b305cb063cbd658d680826ebc0d47cedb890f01f15df2f2e510342d16e7bf5aaf3d7be4ba05a3490de0e9663663addc@127.0.0.1:16789")
+	n, _ := enode.ParseV4("enode://73f48a69ae73b85c0a578258954936300b305cb063cbd658d680826ebc0d47cedb890f01f15df2f2e510342d16e7bf5aaf3d7be4ba05a3490de0e9663663addc@127.0.0.1:16789")
 
 	var nodes []params.CbftNode
 	var blsKey bls.SecretKey

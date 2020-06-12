@@ -22,6 +22,7 @@ import (
 	"crypto/ecdsa"
 	"errors"
 	"fmt"
+	"github.com/PlatONnetwork/PlatON-Go/p2p/enr"
 	"math/big"
 	"math/rand"
 	"net"
@@ -37,7 +38,6 @@ import (
 	"github.com/PlatONnetwork/PlatON-Go/common/mclock"
 	"github.com/PlatONnetwork/PlatON-Go/core/cbfttypes"
 	"github.com/PlatONnetwork/PlatON-Go/crypto/bls"
-	"github.com/PlatONnetwork/PlatON-Go/crypto/sha3"
 	"github.com/PlatONnetwork/PlatON-Go/event"
 	"github.com/PlatONnetwork/PlatON-Go/log"
 	"github.com/PlatONnetwork/PlatON-Go/p2p/discover"
@@ -190,8 +190,8 @@ type Server struct {
 	quit            chan struct{}
 	addstatic       chan *enode.Node
 	removestatic    chan *enode.Node
-	addconsensus    chan enode.ID
-	removeconsensus chan enode.ID
+	addconsensus    chan *enode.Node
+	removeconsensus chan *enode.Node
 	addtrusted      chan *enode.Node
 	removetrusted   chan *enode.Node
 	posthandshake   chan *conn
@@ -351,17 +351,17 @@ func (srv *Server) RemovePeer(node *enode.Node) {
 // AddConsensusPeer connects to the given consensus node and maintains the connection until the
 // server is shut down. If the connection fails for any reason, the server will
 // attempt to reconnect the peer.
-func (srv *Server) AddConsensusPeer(nodeID enode.ID) {
+func (srv *Server) AddConsensusPeer(node *enode.Node) {
 	select {
-	case srv.addconsensus <- nodeID:
+	case srv.addconsensus <- node:
 	case <-srv.quit:
 	}
 }
 
 // RemoveConsensusPeer disconnects from the given consensus node
-func (srv *Server) RemoveConsensusPeer(nodeID enode.ID) {
+func (srv *Server) RemoveConsensusPeer(node *enode.Node) {
 	select {
-	case srv.removeconsensus <- nodeID:
+	case srv.removeconsensus <- node:
 	case <-srv.quit:
 	}
 }
@@ -506,8 +506,8 @@ func (srv *Server) Start() (err error) {
 	srv.posthandshake = make(chan *conn)
 	srv.addstatic = make(chan *enode.Node)
 	srv.removestatic = make(chan *enode.Node)
-	srv.addconsensus = make(chan enode.ID)
-	srv.removeconsensus = make(chan enode.ID)
+	srv.addconsensus = make(chan *enode.Node)
+	srv.removeconsensus = make(chan *enode.Node)
 	srv.addtrusted = make(chan *enode.Node)
 	srv.removetrusted = make(chan *enode.Node)
 	srv.peerOp = make(chan peerOpFunc)
@@ -634,8 +634,8 @@ type dialer interface {
 	taskDone(task, time.Time)
 	addStatic(*enode.Node)
 	removeStatic(*enode.Node)
-	addConsensus(enode.ID)
-	removeConsensus(enode.ID)
+	addConsensus(*enode.Node)
+	removeConsensus(*enode.Node)
 	removeConsensusFromQueue(*enode.Node)
 	initRemoveConsensusPeerFn(removeConsensusPeerFn removeConsensusPeerFn)
 }
@@ -723,14 +723,14 @@ running:
 			// to the consensus node set.
 			srv.log.Trace("Adding consensus node", "node", n)
 
-			if bytes.Compare(n.Bytes(), srv.ourHandshake.ID) == 0 {
+			if id := n.ID(); bytes.Equal(crypto.Keccak256(srv.ourHandshake.ID), id[:]) {
 				srv.log.Debug("We are become an consensus node")
 				srv.consensus = true
 			} else {
 				dialstate.addConsensus(n)
 			}
-			consensusNodes[n] = true
-			if p, ok := peers[n]; ok {
+			consensusNodes[n.ID()] = true
+			if p, ok := peers[n.ID()]; ok {
 				srv.log.Debug("Add consensus flag", "peer", n)
 				p.rw.set(consensusDialedConn, true)
 			}
@@ -738,15 +738,16 @@ running:
 			// This channel is used by RemoveConsensusNode to remove an enode
 			// from the consensus node set.
 			srv.log.Trace("Removing consensus node", "node", n)
-			if bytes.Compare(n.Bytes(), srv.ourHandshake.ID) == 0 {
+
+			if id := n.ID(); bytes.Equal(crypto.Keccak256(srv.ourHandshake.ID), id[:])  {
 				srv.log.Debug("We are not an consensus node")
 				srv.consensus = false
 			}
 			dialstate.removeConsensus(n)
-			if _, ok := consensusNodes[n]; ok {
-				delete(consensusNodes, n)
+			if _, ok := consensusNodes[n.ID()]; ok {
+				delete(consensusNodes, n.ID())
 			}
-			if p, ok := peers[n]; ok {
+			if p, ok := peers[n.ID()]; ok {
 				p.rw.set(consensusDialedConn, false)
 				if !p.rw.is(staticDialedConn | trustedConn | inboundConn) {
 					p.rw.set(dynDialedConn, true)
@@ -1204,8 +1205,7 @@ func (srv *Server) watching() {
 					continue
 				}
 				log.Trace("Received AddValidatorEvent", "nodeID", addEv.NodeID.String())
-				node := discover.NewNode(addEv.NodeID, nil, 0, 0)
-				srv.AddConsensusPeer(node)
+				srv.AddConsensusPeer(enode.SignNull(new(enr.Record), addEv.NodeID))
 			case cbfttypes.RemoveValidatorEvent:
 				removeEv, ok := ev.Data.(cbfttypes.RemoveValidatorEvent)
 				if !ok {
@@ -1213,8 +1213,7 @@ func (srv *Server) watching() {
 					continue
 				}
 				log.Trace("Received RemoveValidatorEvent", "nodeID", removeEv.NodeID.String())
-				node := discover.NewNode(removeEv.NodeID, nil, 0, 0)
-				srv.RemoveConsensusPeer(node)
+				srv.RemoveConsensusPeer(enode.SignNull(new(enr.Record), removeEv.NodeID))
 			default:
 				log.Error("Received unexcepted event")
 			}
@@ -1223,37 +1222,6 @@ func (srv *Server) watching() {
 			return
 		}
 	}
-}
-
-type mockTransport struct {
-	id enode.ID
-	*rlpx
-
-	closeErr error
-}
-
-func newMockTransport(id enode.ID, fd net.Conn) transport {
-	wrapped := newRLPX(fd).(*rlpx)
-	wrapped.rw = newRLPXFrameRW(fd, secrets{
-		MAC:        zero16,
-		AES:        zero16,
-		IngressMAC: sha3.NewKeccak256(),
-		EgressMAC:  sha3.NewKeccak256(),
-	})
-	return &mockTransport{id: id, rlpx: wrapped}
-}
-
-func (c *mockTransport) doEncHandshake(prv *ecdsa.PrivateKey, dialDest *ecdsa.PublicKey) (*ecdsa.PublicKey, error) {
-	return c.id, nil
-}
-
-func (c *mockTransport) doProtoHandshake(our *protoHandshake) (*protoHandshake, error) {
-	return &protoHandshake{ID: c.id, Name: "test"}, nil
-}
-
-func (c *mockTransport) close(err error) {
-	c.rlpx.fd.Close()
-	c.closeErr = err
 }
 
 func randomID() (id enode.ID) {

@@ -49,18 +49,14 @@ func newValidators(nodes []params.CbftNode, validBlockNumber uint64) *cbfttypes.
 	}
 
 	for i, node := range nodes {
-		pubkey, err := node.Node.ID.Pubkey()
-		if err != nil {
-			panic(err)
-		}
-
+		pubkey := node.Node.Pubkey()
 		blsPubKey := node.BlsPubKey
 
-		vds.Nodes[node.Node.ID] = &cbfttypes.ValidateNode{
+		vds.Nodes[node.Node.ID()] = &cbfttypes.ValidateNode{
 			Index:     uint32(i),
 			Address:   crypto.PubkeyToNodeAddress(*pubkey),
 			PubKey:    pubkey,
-			NodeID:    node.Node.ID,
+			NodeID:    node.Node.ID(),
 			BlsPubKey: &blsPubKey,
 		}
 	}
