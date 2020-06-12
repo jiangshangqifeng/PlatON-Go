@@ -71,7 +71,7 @@ func (chandler *CryptoHandler) MustSign(data interface{}) []byte {
 	return sig
 }
 
-func (chandler *CryptoHandler) IsSignedByNodeID(data interface{}, sig []byte, nodeID discover.NodeID) bool {
+func (chandler *CryptoHandler) IsSignedByNodeID(data interface{}, sig []byte, nodeID enode.ID) bool {
 	pubKey, err := crypto.SigToPub(RlpHash(data).Bytes(), sig)
 	if err != nil {
 		log.Error("Check if the signature is signed by a node", "err", err)

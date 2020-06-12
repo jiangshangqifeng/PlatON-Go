@@ -50,7 +50,7 @@ type BlockChainReactor struct {
 	beginRule     []int                     // Order rules for xxPlugins called in BeginBlocker
 	endRule       []int                     // Order rules for xxPlugins called in EndBlocker
 	validatorMode string                    // mode: static, inner, ppos
-	NodeId        discover.NodeID           // The nodeId of current node
+	NodeId        enode.ID           // The nodeId of current node
 	exitCh        chan chan struct{}        // Used to receive an exit signal
 	exitOnce      sync.Once
 	chainID       *big.Int
@@ -194,7 +194,7 @@ func (bcr *BlockChainReactor) SetEndRule(rule []int) {
 	bcr.endRule = rule
 }
 
-func (bcr *BlockChainReactor) SetWorkerCoinBase(header *types.Header, nodeId discover.NodeID) {
+func (bcr *BlockChainReactor) SetWorkerCoinBase(header *types.Header, nodeId enode.ID) {
 
 	/**
 	this things about ppos
@@ -394,7 +394,7 @@ func (bcr *BlockChainReactor) GetValidator(blockNumber uint64) (*cbfttypes.Valid
 	return plugin.StakingInstance().GetValidator(blockNumber)
 }
 
-func (bcr *BlockChainReactor) IsCandidateNode(nodeID discover.NodeID) bool {
+func (bcr *BlockChainReactor) IsCandidateNode(nodeID enode.ID) bool {
 	return plugin.StakingInstance().IsCandidateNode(nodeID)
 }
 

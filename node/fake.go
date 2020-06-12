@@ -57,7 +57,7 @@ func MockDiscoveryNode(privateKey *ecdsa.PrivateKey, nodes []*discover.Node) []*
 }
 
 // mock
-func needAdd(self discover.NodeID, nodes []*discover.Node) (bool, []int) {
+func needAdd(self enode.ID, nodes []*discover.Node) (bool, []int) {
 	selfIndex := -1
 	for idx, n := range nodes {
 		if n.ID.TerminalString() == self.TerminalString() {

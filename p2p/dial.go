@@ -80,7 +80,7 @@ type dialstate struct {
 	lookupBuf     []*enode.Node // current discovery lookup results
 	randomNodes   []*enode.Node // filled from Table
 	static        map[enode.ID]*dialTask
-	//consensus     map[discover.NodeID]*dialTask
+	//consensus     map[enode.ID]*dialTask
 	consensus *dialedTasks
 	hist      *dialHistory
 
@@ -137,7 +137,7 @@ func newDialState(static []*enode.Node, bootnodes []*enode.Node, ntab discoverTa
 		ntab:        ntab,
 		netrestrict: netrestrict,
 		static:      make(map[enode.ID]*dialTask),
-		//consensus:	 make(map[discover.NodeID]*dialTask),
+		//consensus:	 make(map[enode.ID]*dialTask),
 		consensus:   NewDialedTasks(maxConsensusPeers, nil),
 		dialing:     make(map[enode.ID]connFlag),
 		bootnodes:   make([]*enode.Node, len(bootnodes)),

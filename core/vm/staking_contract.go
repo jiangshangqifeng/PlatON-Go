@@ -18,6 +18,7 @@ package vm
 
 import (
 	"fmt"
+	"github.com/PlatONnetwork/PlatON-Go/p2p/enode"
 	"math"
 	"math/big"
 
@@ -39,7 +40,6 @@ import (
 	"github.com/PlatONnetwork/PlatON-Go/common/vm"
 	"github.com/PlatONnetwork/PlatON-Go/core/snapshotdb"
 	"github.com/PlatONnetwork/PlatON-Go/log"
-	"github.com/PlatONnetwork/PlatON-Go/p2p/discover"
 	"github.com/PlatONnetwork/PlatON-Go/x/plugin"
 	"github.com/PlatONnetwork/PlatON-Go/x/staking"
 	"github.com/PlatONnetwork/PlatON-Go/x/xutil"
@@ -116,7 +116,7 @@ func (stkc *StakingContract) FnSigns() map[uint16]interface{} {
 	}
 }
 
-func (stkc *StakingContract) createStaking(typ uint16, benefitAddress common.Address, nodeId discover.NodeID,
+func (stkc *StakingContract) createStaking(typ uint16, benefitAddress common.Address, nodeId enode.ID,
 	externalId, nodeName, website, details string, amount *big.Int, rewardPer uint16, programVersion uint32,
 	programVersionSign common.VersionSign, blsPubKey bls.PublicKeyHex, blsProof bls.SchnorrProofHex) ([]byte, error) {
 
@@ -332,7 +332,7 @@ func verifyRewardPer(rewardPer uint16) bool {
 	return rewardPer >= 0 && rewardPer <= 10000 //	1BP(BasePoint)=0.01%
 }
 
-func (stkc *StakingContract) editCandidate(benefitAddress common.Address, nodeId discover.NodeID, rewardPer uint16,
+func (stkc *StakingContract) editCandidate(benefitAddress common.Address, nodeId enode.ID, rewardPer uint16,
 	externalId, nodeName, website, details string) ([]byte, error) {
 
 	txHash := stkc.Evm.StateDB.TxHash()
@@ -456,7 +456,7 @@ func (stkc *StakingContract) editCandidate(benefitAddress common.Address, nodeId
 		"", TxEditorCandidate, int(common.NoErr.Code)), nil
 }
 
-func (stkc *StakingContract) increaseStaking(nodeId discover.NodeID, typ uint16, amount *big.Int) ([]byte, error) {
+func (stkc *StakingContract) increaseStaking(nodeId enode.ID, typ uint16, amount *big.Int) ([]byte, error) {
 
 	txHash := stkc.Evm.StateDB.TxHash()
 	blockNumber := stkc.Evm.BlockNumber
@@ -531,7 +531,7 @@ func (stkc *StakingContract) increaseStaking(nodeId discover.NodeID, typ uint16,
 		"", TxIncreaseStaking, int(common.NoErr.Code)), nil
 }
 
-func (stkc *StakingContract) withdrewStaking(nodeId discover.NodeID) ([]byte, error) {
+func (stkc *StakingContract) withdrewStaking(nodeId enode.ID) ([]byte, error) {
 
 	txHash := stkc.Evm.StateDB.TxHash()
 	blockNumber := stkc.Evm.BlockNumber
@@ -598,7 +598,7 @@ func (stkc *StakingContract) withdrewStaking(nodeId discover.NodeID) ([]byte, er
 		"", TxWithdrewCandidate, int(common.NoErr.Code)), nil
 }
 
-func (stkc *StakingContract) delegate(typ uint16, nodeId discover.NodeID, amount *big.Int) ([]byte, error) {
+func (stkc *StakingContract) delegate(typ uint16, nodeId enode.ID, amount *big.Int) ([]byte, error) {
 
 	txHash := stkc.Evm.StateDB.TxHash()
 	blockNumber := stkc.Evm.BlockNumber
@@ -727,7 +727,7 @@ func (stkc *StakingContract) delegate(typ uint16, nodeId discover.NodeID, amount
 		"", TxDelegate, int(common.NoErr.Code)), nil
 }
 
-func (stkc *StakingContract) withdrewDelegate(stakingBlockNum uint64, nodeId discover.NodeID, amount *big.Int) ([]byte, error) {
+func (stkc *StakingContract) withdrewDelegate(stakingBlockNum uint64, nodeId enode.ID, amount *big.Int) ([]byte, error) {
 
 	txHash := stkc.Evm.StateDB.TxHash()
 	blockNumber := stkc.Evm.BlockNumber
@@ -894,7 +894,7 @@ func (stkc *StakingContract) getRelatedListByDelAddr(addr common.Address) ([]byt
 }
 
 func (stkc *StakingContract) getDelegateInfo(stakingBlockNum uint64, delAddr common.Address,
-	nodeId discover.NodeID) ([]byte, error) {
+	nodeId enode.ID) ([]byte, error) {
 
 	blockNumber := stkc.Evm.BlockNumber
 	blockHash := stkc.Evm.BlockHash
@@ -917,7 +917,7 @@ func (stkc *StakingContract) getDelegateInfo(stakingBlockNum uint64, delAddr com
 		del, nil), nil
 }
 
-func (stkc *StakingContract) getCandidateInfo(nodeId discover.NodeID) ([]byte, error) {
+func (stkc *StakingContract) getCandidateInfo(nodeId enode.ID) ([]byte, error) {
 	blockNumber := stkc.Evm.BlockNumber
 	blockHash := stkc.Evm.BlockHash
 

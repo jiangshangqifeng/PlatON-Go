@@ -85,7 +85,7 @@ func (rp *RestrictingPlugin) EndBlock(blockHash common.Hash, head *types.Header,
 }
 
 // Confirmed is empty function
-func (rp *RestrictingPlugin) Confirmed(nodeId discover.NodeID, block *types.Block) error {
+func (rp *RestrictingPlugin) Confirmed(nodeId enode.ID, block *types.Block) error {
 	return nil
 }
 

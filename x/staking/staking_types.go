@@ -166,7 +166,7 @@ func (can *Candidate) IsEmpty() bool {
 }
 
 type CandidateBase struct {
-	NodeId discover.NodeID
+	NodeId enode.ID
 	// bls public key
 	BlsPubKey bls.PublicKeyHex
 	// The account used to initiate the staking
@@ -388,7 +388,7 @@ func (can *CandidateMutable) IsInvalidWithdrew() bool {
 
 // Display amount field using 0x hex
 type CandidateHex struct {
-	NodeId               discover.NodeID
+	NodeId               enode.ID
 	BlsPubKey            bls.PublicKeyHex
 	StakingAddress       common.Address
 	BenefitAddress       common.Address
@@ -541,7 +541,7 @@ func (queue CandidateBaseQueue) IsEmpty() bool {
 // They are consensus nodes and Epoch nodes snapshot
 /*type Validator struct {
 	NodeAddress common.Address
-	NodeId      discover.NodeID
+	NodeId      enode.ID
 	// bls public key
 	BlsPubKey bls.PublicKeyHex
 	// The weight snapshot
@@ -561,7 +561,7 @@ type Validator struct {
 	ValidatorTerm   uint32 // Validator's term in the consensus round
 	StakingBlockNum uint64
 	NodeAddress     common.NodeAddress
-	NodeId          discover.NodeID
+	NodeId          enode.ID
 	BlsPubKey       bls.PublicKeyHex
 	Shares          *big.Int
 }
@@ -596,9 +596,9 @@ func (queue ValidatorQueue) String() string {
 	return "[" + strings.Join(arr, ",") + "]"
 }
 
-type CandidateMap map[discover.NodeID]*Candidate
+type CandidateMap map[enode.ID]*Candidate
 
-type NeedRemoveCans map[discover.NodeID]*Candidate
+type NeedRemoveCans map[enode.ID]*Candidate
 
 func (arr ValidatorQueue) ValidatorSort(removes NeedRemoveCans,
 	compare func(slashs NeedRemoveCans, c, can *Validator) int) {
@@ -949,7 +949,7 @@ func (v ValidatorArray) String() string {
 
 type ValidatorEx struct {
 	//NodeAddress common.Address
-	NodeId discover.NodeID
+	NodeId enode.ID
 	// bls public key
 	BlsPubKey bls.PublicKeyHex
 	// The account used to initiate the staking
@@ -1107,7 +1107,7 @@ func (del *DelegationHex) IsEmpty() bool {
 
 type DelegationEx struct {
 	Addr            common.Address
-	NodeId          discover.NodeID
+	NodeId          enode.ID
 	StakingBlockNum uint64
 	DelegationHex
 }
@@ -1135,7 +1135,7 @@ func (dex *DelegationEx) IsEmpty() bool {
 
 type DelegateRelated struct {
 	Addr            common.Address
-	NodeId          discover.NodeID
+	NodeId          enode.ID
 	StakingBlockNum uint64
 }
 
@@ -1215,7 +1215,7 @@ func (queue ValArrIndexQueue) String() string {
 // An item that exists for slash
 type SlashNodeItem struct {
 	// the nodeId will be slashed
-	NodeId discover.NodeID
+	NodeId enode.ID
 	// the amount of von with slashed
 	Amount *big.Int
 	// slash type

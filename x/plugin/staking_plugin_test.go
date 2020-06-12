@@ -2758,7 +2758,7 @@ func TestStakingPlugin_ProposalPassedNotify(t *testing.T) {
 
 	validatorQueue := make(staking.ValidatorQueue, 0)
 
-	nodeIdArr := make([]discover.NodeID, 0)
+	nodeIdArr := make([]enode.ID, 0)
 	for i := 0; i < 1000; i++ {
 
 		var index int
@@ -3141,7 +3141,7 @@ func TestStakingPlugin_IsCandidate(t *testing.T) {
 		return
 	}
 
-	nodeIdArr := make([]discover.NodeID, 0)
+	nodeIdArr := make([]enode.ID, 0)
 
 	for i := 0; i < 1000; i++ {
 
