@@ -320,7 +320,7 @@ func (self *Chequebook) Owner() common.Address {
 	return self.owner
 }
 
-// Address returns the on-chain contract address of the chequebook.
+// Id returns the on-chain contract address of the chequebook.
 func (self *Chequebook) Address() common.Address {
 	return self.contractAddr
 }

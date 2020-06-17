@@ -43,7 +43,7 @@ It has these top-level messages:
 	PublicKey
 	GetAddress
 	EthereumGetAddress
-	Address
+	Id
 	EthereumAddress
 	WipeDevice
 	LoadDevice

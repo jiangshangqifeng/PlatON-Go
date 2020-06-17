@@ -210,7 +210,7 @@ func TestSnapshot2(t *testing.T) {
 
 func compareStateObjects(so0, so1 *stateObject, t *testing.T) {
 	if so0.Address() != so1.Address() {
-		t.Fatalf("Address mismatch: have %v, want %v", so0.address, so1.address)
+		t.Fatalf("Id mismatch: have %v, want %v", so0.address, so1.address)
 	}
 	if so0.Balance().Cmp(so1.Balance()) != 0 {
 		t.Fatalf("Balance mismatch: have %v, want %v", so0.Balance(), so1.Balance())

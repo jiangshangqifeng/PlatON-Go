@@ -108,7 +108,7 @@ func genesisStakingData(prevHash common.Hash, snapdb snapshotdb.BaseDB, g *Genes
 		}
 
 		// about CanBase ...
-		baseKey := staking.CanBaseKeyByAddr(nodeAddr)
+		baseKey := staking.CanBaseKeyByID(nodeAddr)
 		if val, err := rlp.EncodeToBytes(base); nil != err {
 			return lastHash, fmt.Errorf("Failed to Store CanBase Info: rlp encodeing failed. nodeId:%s, error:%s",
 				base.NodeId.String(), err.Error())
@@ -123,7 +123,7 @@ func genesisStakingData(prevHash common.Hash, snapdb snapshotdb.BaseDB, g *Genes
 		}
 
 		// about CanMutable ...
-		mutableKey := staking.CanMutableKeyByAddr(nodeAddr)
+		mutableKey := staking.CanMutableKeyByID(nodeAddr)
 		if val, err := rlp.EncodeToBytes(mutable); nil != err {
 			return lastHash, fmt.Errorf("Failed to Store CanMutable Info: rlp encodeing failed. nodeId:%s, error:%s",
 				base.NodeId.String(), err.Error())
@@ -147,7 +147,7 @@ func genesisStakingData(prevHash common.Hash, snapdb snapshotdb.BaseDB, g *Genes
 
 		// build validator queue for the first consensus epoch
 		validator := &staking.Validator{
-			NodeAddress:     nodeAddr,
+			Id:              nodeAddr,
 			NodeId:          base.NodeId,
 			BlsPubKey:       base.BlsPubKey,
 			ProgramVersion:  base.ProgramVersion, // real version

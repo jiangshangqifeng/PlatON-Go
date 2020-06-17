@@ -248,7 +248,7 @@ func (cw *contractWrapper) pushObject(vm *duktape.Context) {
 	})
 	vm.PutPropString(obj, "getCaller")
 
-	// Push the wrapper for contract.Address
+	// Push the wrapper for contract.Id
 	vm.PushGoFunction(func(ctx *duktape.Context) int {
 		ptr := ctx.PushFixedBuffer(20)
 		copy(makeSlice(ptr, 20), cw.contract.Address().Bytes())

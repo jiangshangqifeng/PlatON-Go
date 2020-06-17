@@ -18,6 +18,8 @@ package staking
 
 import (
 	"fmt"
+	"github.com/PlatONnetwork/PlatON-Go/p2p/discv5"
+	"github.com/PlatONnetwork/PlatON-Go/p2p/enode"
 	"math/big"
 	"strings"
 
@@ -27,7 +29,6 @@ import (
 	"github.com/PlatONnetwork/PlatON-Go/crypto/bls"
 
 	"github.com/PlatONnetwork/PlatON-Go/common"
-	"github.com/PlatONnetwork/PlatON-Go/p2p/discover"
 )
 
 const (
@@ -540,7 +541,7 @@ func (queue CandidateBaseQueue) IsEmpty() bool {
 // They are Simplified Candidate
 // They are consensus nodes and Epoch nodes snapshot
 /*type Validator struct {
-	NodeAddress common.Address
+	Id common.Id
 	NodeId      enode.ID
 	// bls public key
 	BlsPubKey bls.PublicKeyHex
@@ -560,16 +561,16 @@ type Validator struct {
 	StakingTxIndex  uint32
 	ValidatorTerm   uint32 // Validator's term in the consensus round
 	StakingBlockNum uint64
-	NodeAddress     common.NodeAddress
-	NodeId          enode.ID
+	Id              enode.ID
+	NodeId          discv5.NodeID
 	BlsPubKey       bls.PublicKeyHex
 	Shares          *big.Int
 }
 
 func (val *Validator) String() string {
-	return fmt.Sprintf(`{"NodeId": "%s","NodeAddress": "%s","BlsPubKey": "%s","ProgramVersion": %d,"Shares": %d,"StakingBlockNum": %d,"StakingTxIndex": %d,"ValidatorTerm": %d}`,
+	return fmt.Sprintf(`{"NodeId": "%s","Id": "%s","BlsPubKey": "%s","ProgramVersion": %d,"Shares": %d,"StakingBlockNum": %d,"StakingTxIndex": %d,"ValidatorTerm": %d}`,
 		val.NodeId.String(),
-		fmt.Sprintf("%x", val.NodeAddress.Bytes()),
+		fmt.Sprintf("%x", val.Id.Bytes()),
 		fmt.Sprintf("%x", val.BlsPubKey.Bytes()),
 		val.ProgramVersion,
 		val.Shares,
@@ -696,7 +697,7 @@ func CompareDefault(removes NeedRemoveCans, left, right *Validator) int {
 		}
 	}
 
-	_, leftOk := removes[left.NodeId]
+	_, leftOk := removes[left.Id]
 	_, rightOk := removes[right.NodeId]
 
 	if leftOk && !rightOk {
@@ -948,7 +949,7 @@ func (v ValidatorArray) String() string {
 }
 
 type ValidatorEx struct {
-	//NodeAddress common.Address
+	//Id common.Id
 	NodeId enode.ID
 	// bls public key
 	BlsPubKey bls.PublicKeyHex
@@ -983,7 +984,7 @@ type ValidatorEx struct {
 }
 
 func (vex *ValidatorEx) String() string {
-	return fmt.Sprintf(`{"NodeId": "%s","NodeAddress": "%s","BlsPubKey": "%s","StakingAddress": "%s","BenefitAddress": "%s","RewardPer": "%d","NextRewardPer": "%d","RewardPerChangeEpoch": "%d","StakingTxIndex": %d,"ProgramVersion": %d,"StakingBlockNum": %d,"Shares": "%s","ExternalId": "%s","NodeName": "%s","Website": "%s","Details": "%s","ValidatorTerm": %d,"DelegateTotal": "%s"}`,
+	return fmt.Sprintf(`{"NodeId": "%s","Id": "%s","BlsPubKey": "%s","StakingAddress": "%s","BenefitAddress": "%s","RewardPer": "%d","NextRewardPer": "%d","RewardPerChangeEpoch": "%d","StakingTxIndex": %d,"ProgramVersion": %d,"StakingBlockNum": %d,"Shares": "%s","ExternalId": "%s","NodeName": "%s","Website": "%s","Details": "%s","ValidatorTerm": %d,"DelegateTotal": "%s"}`,
 		vex.NodeId.String(),
 		fmt.Sprintf("%x", vex.StakingAddress.Bytes()),
 		fmt.Sprintf("%x", vex.BlsPubKey.Bytes()),

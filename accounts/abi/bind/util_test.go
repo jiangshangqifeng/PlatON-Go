@@ -37,7 +37,7 @@ func TestWaitDeployed(t *testing.T) {
 		// Wait for it to get mined in the background.
 		var (
 			err     error
-			address common.Address
+			address common.Id
 			mined   = make(chan struct{})
 			ctx     = context.Background()
 		)

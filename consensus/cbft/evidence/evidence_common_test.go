@@ -18,6 +18,8 @@ package evidence
 
 import (
 	"crypto/ecdsa"
+	"github.com/PlatONnetwork/PlatON-Go/p2p/discv5"
+	"github.com/PlatONnetwork/PlatON-Go/p2p/enode"
 	"math/big"
 	"testing"
 	"time"
@@ -25,8 +27,6 @@ import (
 	"github.com/PlatONnetwork/PlatON-Go/crypto/bls"
 
 	"github.com/PlatONnetwork/PlatON-Go/crypto"
-
-	"github.com/PlatONnetwork/PlatON-Go/p2p/discover"
 
 	"github.com/PlatONnetwork/PlatON-Go/core/cbfttypes"
 	"github.com/PlatONnetwork/PlatON-Go/core/types"
@@ -69,10 +69,10 @@ func createValidateNode(num int) ([]*cbfttypes.ValidateNode, []*bls.SecretKey) {
 	for i := 0; i < num; i++ {
 
 		nodes[i] = &cbfttypes.ValidateNode{
-			Index:   uint32(i),
-			Address: crypto.PubkeyToNodeAddress(pk[i].PublicKey),
-			PubKey:  &pk[i].PublicKey,
-			NodeID:  discover.PubkeyID(&pk[i].PublicKey),
+			Index:  uint32(i),
+			Id:     enode.PubkeyToIDV4(&pk[i].PublicKey),
+			PubKey: &pk[i].PublicKey,
+			NodeID: discv5.PubkeyID(&pk[i].PublicKey),
 		}
 		nodes[i].BlsPubKey = sk[i].GetPublicKey()
 

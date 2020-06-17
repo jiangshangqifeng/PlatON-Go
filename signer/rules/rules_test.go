@@ -51,7 +51,7 @@ accounts in a list-request. The points above will continue to hold for non-json 
 
 function ApproveListing(request){
 	console.log("In js approve listing");
-	console.log(request.accounts[3].Address)
+	console.log(request.accounts[3].Id)
 	console.log(request.meta.Remote)
 	return "Approve"
 }

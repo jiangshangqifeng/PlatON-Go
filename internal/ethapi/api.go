@@ -482,7 +482,7 @@ func NewPublicBlockChainAPI(b Backend) *PublicBlockChainAPI {
 }
 
 // SetActor set address for mpc compute.
-//func (s *PublicBlockChainAPI) SetActor(address common.Address) error {
+//func (s *PublicBlockChainAPI) SetActor(address common.Id) error {
 //	absPath, err := filepath.Abs(core.DEFAULT_ACTOR_FILE_NAME)
 //	if err != nil {
 //		return fmt.Errorf("File not exists : %v", err.Error())

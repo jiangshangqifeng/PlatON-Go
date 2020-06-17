@@ -148,7 +148,7 @@ func buildPrepareData(genesis *types.Block, t *testing.T) (*types.Header, error)
 
 		privateKey, err = crypto.GenerateKey()
 		if nil != err {
-			t.Errorf("Failed to generate random Address private key: %v", err)
+			t.Errorf("Failed to generate random Id private key: %v", err)
 			return nil, err
 		}
 
@@ -201,7 +201,7 @@ func buildPrepareData(genesis *types.Block, t *testing.T) (*types.Header, error)
 		}
 
 		// Store Candidate Base info
-		canBaseKey := staking.CanBaseKeyByAddr(canAddr)
+		canBaseKey := staking.CanBaseKeyByID(canAddr)
 		if val, err := rlp.EncodeToBytes(canTmp.CandidateBase); nil != err {
 			t.Errorf("Failed to Store CandidateBase info: PutBaseDB failed. error:%s", err.Error())
 			return nil, err
@@ -214,7 +214,7 @@ func buildPrepareData(genesis *types.Block, t *testing.T) (*types.Header, error)
 		}
 
 		// Store Candidate Mutable info
-		canMutableKey := staking.CanMutableKeyByAddr(canAddr)
+		canMutableKey := staking.CanMutableKeyByID(canAddr)
 		if val, err := rlp.EncodeToBytes(canTmp.CandidateMutable); nil != err {
 			t.Errorf("Failed to Store CandidateMutable info: PutBaseDB failed. error:%s", err.Error())
 			return nil, err
@@ -228,7 +228,7 @@ func buildPrepareData(genesis *types.Block, t *testing.T) (*types.Header, error)
 
 		if j < int(xcom.MaxValidators()) {
 			v := &staking.Validator{
-				NodeAddress:     canAddr,
+				Id:              canAddr,
 				NodeId:          canTmp.NodeId,
 				BlsPubKey:       canTmp.BlsPubKey,
 				ProgramVersion:  canTmp.ProgramVersion,
@@ -320,7 +320,7 @@ func buildPrepareData(genesis *types.Block, t *testing.T) (*types.Header, error)
 	// SetCurrent to snapshotDB
 	privateKey, err := crypto.GenerateKey()
 	if nil != err {
-		t.Errorf("Failed to generate random Address private key: %v", err)
+		t.Errorf("Failed to generate random Id private key: %v", err)
 		return nil, err
 	}
 	nodeId := discover.PubkeyID(&privateKey.PublicKey)
@@ -491,7 +491,7 @@ func TestStakingPlugin_EndBlock(t *testing.T) {
 	// new block
 	privateKey, err := crypto.GenerateKey()
 
-	if !assert.Nil(t, err, fmt.Sprintf("Failed to generate random Address private key: %v", err)) {
+	if !assert.Nil(t, err, fmt.Sprintf("Failed to generate random Id private key: %v", err)) {
 		return
 	}
 
@@ -523,7 +523,7 @@ func TestStakingPlugin_EndBlock(t *testing.T) {
 		nodeId := discover.PubkeyID(&privateKey.PublicKey)
 
 		privateKey, err = crypto.GenerateKey()
-		if !assert.Nil(t, err, fmt.Sprintf("Failed to generate random Address private key: %v", err)) {
+		if !assert.Nil(t, err, fmt.Sprintf("Failed to generate random Id private key: %v", err)) {
 			return
 		}
 		addr := crypto.PubkeyToAddress(privateKey.PublicKey)
@@ -571,7 +571,7 @@ func TestStakingPlugin_EndBlock(t *testing.T) {
 		}
 
 		// Store CandidateBase info
-		canBaseKey := staking.CanBaseKeyByAddr(canAddr)
+		canBaseKey := staking.CanBaseKeyByID(canAddr)
 		if val, err := rlp.EncodeToBytes(canBase); nil != err {
 			t.Errorf("Failed to Store Candidate Base info: PutBaseDB failed. error:%s", err.Error())
 			return
@@ -584,7 +584,7 @@ func TestStakingPlugin_EndBlock(t *testing.T) {
 		}
 
 		// Store CandidateMutable info
-		canMutableKey := staking.CanMutableKeyByAddr(canAddr)
+		canMutableKey := staking.CanMutableKeyByID(canAddr)
 		if val, err := rlp.EncodeToBytes(canMutable); nil != err {
 			t.Errorf("Failed to Store Candidate Mutable info: PutBaseDB failed. error:%s", err.Error())
 			return
@@ -598,7 +598,7 @@ func TestStakingPlugin_EndBlock(t *testing.T) {
 
 		if j < int(xcom.MaxValidators()) {
 			v := &staking.Validator{
-				NodeAddress:     canAddr,
+				Id:              canAddr,
 				NodeId:          canBase.NodeId,
 				BlsPubKey:       canBase.BlsPubKey,
 				ProgramVersion:  canBase.ProgramVersion,
@@ -738,7 +738,7 @@ func TestStakingPlugin_EndBlock(t *testing.T) {
 	// new block
 	privateKey2, err := crypto.GenerateKey()
 	if nil != err {
-		t.Errorf("Failed to generate random Address private key: %v", err)
+		t.Errorf("Failed to generate random Id private key: %v", err)
 		return
 	}
 	nodeId2 := discover.PubkeyID(&privateKey2.PublicKey)
@@ -808,7 +808,7 @@ func TestStakingPlugin_Confirmed(t *testing.T) {
 
 	// new block
 	privateKey, err := crypto.GenerateKey()
-	if !assert.Nil(t, err, fmt.Sprintf("Failed to generate random Address private key: %v", err)) {
+	if !assert.Nil(t, err, fmt.Sprintf("Failed to generate random Id private key: %v", err)) {
 		return
 	}
 
@@ -841,7 +841,7 @@ func TestStakingPlugin_Confirmed(t *testing.T) {
 		nodeId := discover.PubkeyID(&privateKey.PublicKey)
 
 		privateKey, err = crypto.GenerateKey()
-		if !assert.Nil(t, err, fmt.Sprintf("Failed to generate random Address private key: %v", err)) {
+		if !assert.Nil(t, err, fmt.Sprintf("Failed to generate random Id private key: %v", err)) {
 			return
 		}
 
@@ -890,7 +890,7 @@ func TestStakingPlugin_Confirmed(t *testing.T) {
 		}
 
 		// Store CandidateBase info
-		canBaseKey := staking.CanBaseKeyByAddr(canAddr)
+		canBaseKey := staking.CanBaseKeyByID(canAddr)
 		if val, err := rlp.EncodeToBytes(canBase); nil != err {
 			t.Errorf("Failed to Store Candidate Base info: PutBaseDB failed. error:%s", err.Error())
 			return
@@ -903,7 +903,7 @@ func TestStakingPlugin_Confirmed(t *testing.T) {
 		}
 
 		// Store CandidateMutable info
-		canMutableKey := staking.CanMutableKeyByAddr(canAddr)
+		canMutableKey := staking.CanMutableKeyByID(canAddr)
 		if val, err := rlp.EncodeToBytes(canMutable); nil != err {
 			t.Errorf("Failed to Store Candidate Mutable info: PutBaseDB failed. error:%s", err.Error())
 			return
@@ -917,7 +917,7 @@ func TestStakingPlugin_Confirmed(t *testing.T) {
 
 		if j < int(xcom.MaxValidators()) {
 			v := &staking.Validator{
-				NodeAddress:     canAddr,
+				Id:              canAddr,
 				NodeId:          canBase.NodeId,
 				BlsPubKey:       canBase.BlsPubKey,
 				ProgramVersion:  canBase.ProgramVersion,
@@ -2046,7 +2046,7 @@ func TestStakingPlugin_ElectNextVerifierList(t *testing.T) {
 
 		privateKey, err = crypto.GenerateKey()
 		if nil != err {
-			t.Errorf("Failed to generate random Address private key: %v", err)
+			t.Errorf("Failed to generate random Id private key: %v", err)
 			return
 		}
 
@@ -2138,7 +2138,7 @@ func TestStakingPlugin_ElectNextVerifierList(t *testing.T) {
 		addr := common.BytesToNodeAddress(addrSuffix)
 
 		val := &staking.Validator{
-			NodeAddress:     addr,
+			Id:              addr,
 			NodeId:          can.NodeId,
 			BlsPubKey:       can.BlsPubKey,
 			ProgramVersion:  can.ProgramVersion,
@@ -2233,7 +2233,7 @@ func TestStakingPlugin_Election(t *testing.T) {
 
 		privateKey, err = crypto.GenerateKey()
 		if nil != err {
-			t.Errorf("Failed to generate random Address private key: %v", err)
+			t.Errorf("Failed to generate random Id private key: %v", err)
 			return
 		}
 
@@ -2324,7 +2324,7 @@ func TestStakingPlugin_Election(t *testing.T) {
 		addr := common.BytesToNodeAddress(addrSuffix)
 
 		val := &staking.Validator{
-			NodeAddress:     addr,
+			Id:              addr,
 			NodeId:          can.NodeId,
 			BlsPubKey:       can.BlsPubKey,
 			ProgramVersion:  can.ProgramVersion,
@@ -2444,7 +2444,7 @@ func TestStakingPlugin_SlashCandidates(t *testing.T) {
 
 		privateKey, err = crypto.GenerateKey()
 		if nil != err {
-			t.Errorf("Failed to generate random Address private key: %v", err)
+			t.Errorf("Failed to generate random Id private key: %v", err)
 			return
 		}
 
@@ -2540,7 +2540,7 @@ func TestStakingPlugin_SlashCandidates(t *testing.T) {
 		addr := common.BytesToNodeAddress(addrSuffix)
 
 		val := &staking.Validator{
-			NodeAddress:     addr,
+			Id:              addr,
 			NodeId:          can.NodeId,
 			BlsPubKey:       can.BlsPubKey,
 			ProgramVersion:  can.ProgramVersion,
@@ -2654,7 +2654,7 @@ func TestStakingPlugin_DeclarePromoteNotify(t *testing.T) {
 
 		privateKey, err = crypto.GenerateKey()
 		if nil != err {
-			t.Errorf("Failed to generate random Address private key: %v", err)
+			t.Errorf("Failed to generate random Id private key: %v", err)
 			return
 		}
 
@@ -2786,7 +2786,7 @@ func TestStakingPlugin_ProposalPassedNotify(t *testing.T) {
 
 		privateKey, err = crypto.GenerateKey()
 		if nil != err {
-			t.Errorf("Failed to generate random Address private key: %v", err)
+			t.Errorf("Failed to generate random Id private key: %v", err)
 			return
 		}
 
@@ -2842,7 +2842,7 @@ func TestStakingPlugin_ProposalPassedNotify(t *testing.T) {
 		}
 
 		v := &staking.Validator{
-			NodeAddress:     canAddr,
+			Id:              canAddr,
 			NodeId:          canTmp.NodeId,
 			BlsPubKey:       canTmp.BlsPubKey,
 			ProgramVersion:  canTmp.ProgramVersion,
@@ -3170,7 +3170,7 @@ func TestStakingPlugin_IsCandidate(t *testing.T) {
 
 		privateKey, err = crypto.GenerateKey()
 		if nil != err {
-			t.Errorf("Failed to generate random Address private key: %v", err)
+			t.Errorf("Failed to generate random Id private key: %v", err)
 			return
 		}
 
@@ -3445,9 +3445,9 @@ func TestStakingPlugin_ProbabilityElection(t *testing.T) {
 		}
 
 		v := &staking.Validator{
-			NodeAddress: addr,
-			NodeId:      nodeId,
-			BlsPubKey:   blsKeyHex,
+			Id:        addr,
+			NodeId:    nodeId,
+			BlsPubKey: blsKeyHex,
 
 			ProgramVersion:  uint32(mrand.Intn(5) + 1),
 			Shares:          v1.SetInt64(10),
@@ -3494,8 +3494,8 @@ func TestStakingPlugin_RandomOrderValidatorQueue(t *testing.T) {
 		nodeId := discover.PubkeyID(&tempPrivateKey.PublicKey)
 		addr := crypto.PubkeyToNodeAddress(tempPrivateKey.PublicKey)
 		v := &staking.Validator{
-			NodeAddress: addr,
-			NodeId:      nodeId,
+			Id:     addr,
+			NodeId: nodeId,
 		}
 		vqList = append(vqList, v)
 	}
@@ -3567,7 +3567,7 @@ func Test_IteratorCandidate(t *testing.T) {
 
 		privateKey, err = crypto.GenerateKey()
 		if nil != err {
-			t.Errorf("Failed to generate random Address private key: %v", err)
+			t.Errorf("Failed to generate random Id private key: %v", err)
 			return
 		}
 

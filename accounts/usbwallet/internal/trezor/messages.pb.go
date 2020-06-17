@@ -899,7 +899,7 @@ func (m *PublicKey) GetXpub() string {
 // *
 // Request: Ask device for address corresponding to address_n path
 // @next PassphraseRequest
-// @next Address
+// @next Id
 // @next Failure
 type GetAddress struct {
 	AddressN         []uint32                  `protobuf:"varint,1,rep,name=address_n,json=addressN" json:"address_n,omitempty"`
@@ -2807,7 +2807,7 @@ func init() {
 	proto.RegisterType((*PublicKey)(nil), "PublicKey")
 	proto.RegisterType((*GetAddress)(nil), "GetAddress")
 	proto.RegisterType((*EthereumGetAddress)(nil), "EthereumGetAddress")
-	proto.RegisterType((*Address)(nil), "Address")
+	proto.RegisterType((*Address)(nil), "Id")
 	proto.RegisterType((*EthereumAddress)(nil), "EthereumAddress")
 	proto.RegisterType((*WipeDevice)(nil), "WipeDevice")
 	proto.RegisterType((*LoadDevice)(nil), "LoadDevice")

@@ -500,7 +500,7 @@ func DefaultGenesisBlock() *Genesis {
 			Timestamp: 0,
 			ExtraData: hexutil.MustDecode("0xd782070186706c61746f6e86676f312e3131856c696e757800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
 			GasLimit:  params.GenesisGasLimit,
-			Alloc: map[common.Address]GenesisAccount{
+			Alloc: map[common.Id]GenesisAccount{
 				vm.RewardManagerPoolAddr: {Balance: rewardMgrPoolIssue},
 				generalAddr:              {Balance: generalBalance},
 			},

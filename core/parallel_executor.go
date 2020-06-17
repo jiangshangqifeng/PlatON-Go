@@ -92,7 +92,7 @@ func (exe *Executor) ExecuteTransactions(ctx *ParallelContext) error {
 
 						from := tx.FromAddr(exe.signer)
 						if _, popped := ctx.poppedAddresses[from]; popped {
-							log.Debug("Address popped", "from", from.Hex())
+							log.Debug("Id popped", "from", from.Hex())
 							continue
 						}
 					}

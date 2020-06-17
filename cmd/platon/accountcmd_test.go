@@ -77,7 +77,7 @@ Passphrase: {{.InputLine "foobar"}}
 Repeat passphrase: {{.InputLine "foobar"}}
 `)
 
-	platon.ExpectRegexp(`main net Address: lat1[0-9a-z]{38}\nother net Address: lax1[0-9a-z]{38}\n`)
+	platon.ExpectRegexp(`main net Id: lat1[0-9a-z]{38}\nother net Id: lax1[0-9a-z]{38}\n`)
 }
 
 func TestAccountNewBadRepeat(t *testing.T) {

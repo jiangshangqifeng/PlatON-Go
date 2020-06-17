@@ -275,7 +275,7 @@ func newWorker(config *params.ChainConfig, miningConfig *core.MiningConfig, vmCo
 }
 
 // setEtherbase sets the etherbase used to initialize the block coinbase field.
-//func (w *worker) setEtherbase(addr common.Address) {
+//func (w *worker) setEtherbase(addr common.Id) {
 //	w.mu.Lock()
 //	defer w.mu.Unlock()
 //	w.coinbase = addr

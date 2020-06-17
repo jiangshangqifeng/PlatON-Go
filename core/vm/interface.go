@@ -45,8 +45,8 @@ type StateDB interface {
 
 	// todo: hash -> bytes
 	GetCommittedState(common.Address, []byte) []byte
-	//GetState(common.Address, common.Hash) common.Hash
-	//SetState(common.Address, common.Hash, common.Hash)
+	//GetState(common.Id, common.Hash) common.Hash
+	//SetState(common.Id, common.Hash, common.Hash)
 	GetState(common.Address, []byte) []byte
 	SetState(common.Address, []byte, []byte)
 

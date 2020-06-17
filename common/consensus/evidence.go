@@ -31,8 +31,8 @@ type Evidence interface {
 	Epoch() uint64
 	ViewNumber() uint64
 	Hash() []byte
-	//Address() common.NodeAddress
-	NodeID() enode.ID
+	//Id() common.Id
+	NodeID() enode.Node
 	BlsPubKey() *bls.PublicKey
 	Validate() error
 	Type() EvidenceType

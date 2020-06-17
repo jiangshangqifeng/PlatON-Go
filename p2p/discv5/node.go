@@ -294,7 +294,7 @@ func HexID(in string) (NodeID, error) {
 
 // MustHexID converts a hex string to a NodeID.
 // It panics if the string is not a valid NodeID.
-func MustHexID(in string) NodeID {
+func hexEncPubkey(in string) NodeID {
 	id, err := HexID(in)
 	if err != nil {
 		panic(err)

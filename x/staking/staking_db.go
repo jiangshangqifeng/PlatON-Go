@@ -18,12 +18,12 @@ package staking
 
 import (
 	"fmt"
+	"github.com/PlatONnetwork/PlatON-Go/p2p/enode"
 
 	"github.com/syndtr/goleveldb/leveldb/iterator"
 
 	"github.com/PlatONnetwork/PlatON-Go/common"
 	"github.com/PlatONnetwork/PlatON-Go/core/snapshotdb"
-	"github.com/PlatONnetwork/PlatON-Go/p2p/discover"
 	"github.com/PlatONnetwork/PlatON-Go/rlp"
 )
 
@@ -163,9 +163,9 @@ func (db *StakingDB) DelCandidateStore(blockHash common.Hash, addr common.NodeAd
 
 // about canbase ...
 
-func (db *StakingDB) GetCanBaseStore(blockHash common.Hash, addr common.NodeAddress) (*CandidateBase, error) {
+func (db *StakingDB) GetCanBaseStore(blockHash common.Hash, id enode.ID) (*CandidateBase, error) {
 
-	key := CanBaseKeyByAddr(addr)
+	key := CanBaseKeyByID(id)
 
 	canByte, err := db.get(blockHash, key)
 
@@ -182,7 +182,7 @@ func (db *StakingDB) GetCanBaseStore(blockHash common.Hash, addr common.NodeAddr
 }
 
 func (db *StakingDB) GetCanBaseStoreByIrr(addr common.NodeAddress) (*CandidateBase, error) {
-	key := CanBaseKeyByAddr(addr)
+	key := CanBaseKeyByID(addr)
 	canByte, err := db.getFromCommitted(key)
 
 	if nil != err {
@@ -229,7 +229,7 @@ func (db *StakingDB) GetCanBaseStoreByIrrWithSuffix(suffix []byte) (*CandidateBa
 
 func (db *StakingDB) SetCanBaseStore(blockHash common.Hash, addr common.NodeAddress, can *CandidateBase) error {
 
-	key := CanBaseKeyByAddr(addr)
+	key := CanBaseKeyByID(addr)
 
 	if val, err := rlp.EncodeToBytes(can); nil != err {
 		return err
@@ -240,15 +240,15 @@ func (db *StakingDB) SetCanBaseStore(blockHash common.Hash, addr common.NodeAddr
 }
 
 func (db *StakingDB) DelCanBaseStore(blockHash common.Hash, addr common.NodeAddress) error {
-	key := CanBaseKeyByAddr(addr)
+	key := CanBaseKeyByID(addr)
 	return db.del(blockHash, key)
 }
 
 // about canmutable ...
 
-func (db *StakingDB) GetCanMutableStore(blockHash common.Hash, addr common.NodeAddress) (*CandidateMutable, error) {
+func (db *StakingDB) GetCanMutableStore(blockHash common.Hash, id enode.ID) (*CandidateMutable, error) {
 
-	key := CanMutableKeyByAddr(addr)
+	key := CanMutableKeyByID(id)
 
 	canByte, err := db.get(blockHash, key)
 
@@ -265,7 +265,7 @@ func (db *StakingDB) GetCanMutableStore(blockHash common.Hash, addr common.NodeA
 }
 
 func (db *StakingDB) GetCanMutableStoreByIrr(addr common.NodeAddress) (*CandidateMutable, error) {
-	key := CanMutableKeyByAddr(addr)
+	key := CanMutableKeyByID(addr)
 	canByte, err := db.getFromCommitted(key)
 
 	if nil != err {
@@ -312,7 +312,7 @@ func (db *StakingDB) GetCanMutableStoreByIrrWithSuffix(suffix []byte) (*Candidat
 
 func (db *StakingDB) SetCanMutableStore(blockHash common.Hash, addr common.NodeAddress, can *CandidateMutable) error {
 
-	key := CanMutableKeyByAddr(addr)
+	key := CanMutableKeyByID(addr)
 
 	if val, err := rlp.EncodeToBytes(can); nil != err {
 		return err
@@ -323,7 +323,7 @@ func (db *StakingDB) SetCanMutableStore(blockHash common.Hash, addr common.NodeA
 }
 
 func (db *StakingDB) DelCanMutableStore(blockHash common.Hash, addr common.NodeAddress) error {
-	key := CanMutableKeyByAddr(addr)
+	key := CanMutableKeyByID(addr)
 	return db.del(blockHash, key)
 }
 

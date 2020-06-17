@@ -19,6 +19,8 @@ package plugin
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/PlatONnetwork/PlatON-Go/p2p/discover"
+	"github.com/PlatONnetwork/PlatON-Go/p2p/enode"
 	"github.com/PlatONnetwork/PlatON-Go/x/gov"
 	"math"
 	"math/big"
@@ -31,9 +33,6 @@ import (
 	"github.com/PlatONnetwork/PlatON-Go/crypto"
 
 	"github.com/PlatONnetwork/PlatON-Go/core/snapshotdb"
-
-	"github.com/PlatONnetwork/PlatON-Go/p2p/discover"
-
 	"github.com/PlatONnetwork/PlatON-Go/x/staking"
 
 	"github.com/PlatONnetwork/PlatON-Go/common"
@@ -432,7 +431,7 @@ func (rmp *RewardMgrPlugin) getBlockMinderAddress(blockHash common.Hash, head *t
 	if err != nil {
 		return discover.ZeroNodeID, common.ZeroNodeAddr, err
 	}
-	return discover.PubkeyID(pk), crypto.PubkeyToNodeAddress(*pk), nil
+	return enode.PubkeyToIDV4(pk), crypto.PubkeyToNodeAddress(*pk), nil
 }
 
 // AllocatePackageBlock used for reward new block. it returns coinbase and error

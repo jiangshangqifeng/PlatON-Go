@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/PlatONnetwork/PlatON-Go/p2p/discv5"
 	"math"
 	"math/big"
 	"sort"
@@ -98,11 +99,11 @@ type RemoveValidatorEvent struct {
 type UpdateValidatorEvent struct{}
 
 type ValidateNode struct {
-	Index     uint32             `json:"index"`
-	Address   common.NodeAddress `json:"address"`
-	PubKey    *ecdsa.PublicKey   `json:"-"`
-	NodeID    enode.ID           `json:"nodeID"`
-	BlsPubKey *bls.PublicKey     `json:"blsPubKey"`
+	Index     uint32           `json:"index"`
+	Id        enode.ID         `json:"address"`
+	PubKey    *ecdsa.PublicKey `json:"-"`
+	NodeID    discv5.NodeID    `json:"nodeID"`
+	BlsPubKey *bls.PublicKey   `json:"blsPubKey"`
 }
 
 type ValidateNodeMap map[enode.ID]*ValidateNode
@@ -211,7 +212,7 @@ func (vs *Validators) FindNodeByIndex(index int) (*ValidateNode, error) {
 
 func (vs *Validators) FindNodeByAddress(addr common.NodeAddress) (*ValidateNode, error) {
 	for _, node := range vs.Nodes {
-		if bytes.Equal(node.Address[:], addr[:]) {
+		if bytes.Equal(node.Id[:], addr[:]) {
 			return node, nil
 		}
 	}
@@ -225,7 +226,7 @@ func (vs *Validators) NodeID(idx int) enode.ID {
 	if idx >= vs.sortedNodes.Len() {
 		return enode.ID{}
 	}
-	return vs.sortedNodes[idx].NodeID
+	return vs.sortedNodes[idx].Id
 }
 
 func (vs *Validators) Index(nodeID enode.ID) (uint32, error) {

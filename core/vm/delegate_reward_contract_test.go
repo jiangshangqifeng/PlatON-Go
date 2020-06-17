@@ -86,7 +86,7 @@ func generateStk(rewardPer uint16, delegateTotal *big.Int, blockNumber uint64) (
 	validatorQueue := make(staking.ValidatorQueue, 0)
 	validatorQueue = append(validatorQueue, &staking.Validator{
 		NodeId:          nodeID,
-		NodeAddress:     common.NodeAddress(canBase.BenefitAddress),
+		Id:              common.NodeAddress(canBase.BenefitAddress),
 		StakingBlockNum: canBase.StakingBlockNum,
 	})
 
@@ -122,10 +122,10 @@ func TestWithdrawDelegateRewardWithReward(t *testing.T) {
 		if err := stkDB.SetEpochValList(hash, index[0].Start, index[0].End, queue); err != nil {
 			return err
 		}
-		if err := stkDB.SetCanBaseStore(hash, queue[0].NodeAddress, can.CandidateBase); err != nil {
+		if err := stkDB.SetCanBaseStore(hash, queue[0].Id, can.CandidateBase); err != nil {
 			return err
 		}
-		if err := stkDB.SetCanMutableStore(hash, queue[0].NodeAddress, can.CandidateMutable); err != nil {
+		if err := stkDB.SetCanMutableStore(hash, queue[0].Id, can.CandidateMutable); err != nil {
 			return err
 		}
 		if err := stkDB.SetDelegateStore(hash, delegateRewardAdd, can.CandidateBase.NodeId, can.CandidateBase.StakingBlockNum, &delegate); err != nil {
@@ -145,7 +145,7 @@ func TestWithdrawDelegateRewardWithReward(t *testing.T) {
 		if err := chain.AddBlockWithSnapDB(true, func(hash common.Hash, header *types.Header, sdb snapshotdb.DB) error {
 			if xutil.IsBeginOfEpoch(header.Number.Uint64()) {
 				can.CandidateMutable.CleanCurrentEpochDelegateReward()
-				if err := stkDB.SetCanMutableStore(hash, queue[0].NodeAddress, can.CandidateMutable); err != nil {
+				if err := stkDB.SetCanMutableStore(hash, queue[0].Id, can.CandidateMutable); err != nil {
 					return err
 				}
 			}

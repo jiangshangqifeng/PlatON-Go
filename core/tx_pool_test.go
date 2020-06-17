@@ -109,9 +109,9 @@ func newTestTxPool(config TxPoolConfig, chainconfig *params.ChainConfig) *TxPool
 		chainconfig: chainconfig,
 		chain:       testBlockChain,
 		signer:      types.NewEIP155Signer(chainconfig.ChainID),
-		pending:     make(map[common.Address]*txList),
-		queue:       make(map[common.Address]*txList),
-		beats:       make(map[common.Address]time.Time),
+		pending:     make(map[common.Id]*txList),
+		queue:       make(map[common.Id]*txList),
+		beats:       make(map[common.Id]time.Time),
 		all:         newTxLookup(),
 		// modified by PlatON
 		// chainHeadCh: make(chan ChainHeadEvent, chainHeadChanSize),

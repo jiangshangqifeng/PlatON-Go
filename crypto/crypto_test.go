@@ -101,7 +101,7 @@ func TestSign(t *testing.T) {
 	pubKey, _ := UnmarshalPubkey(recoveredPub)
 	recoveredAddr := PubkeyToAddress(*pubKey)
 	if addr != recoveredAddr {
-		t.Errorf("Address mismatch: want: %x have: %x", addr, recoveredAddr)
+		t.Errorf("Id mismatch: want: %x have: %x", addr, recoveredAddr)
 	}
 
 	// should be equal to SigToPub
@@ -111,7 +111,7 @@ func TestSign(t *testing.T) {
 	}
 	recoveredAddr2 := PubkeyToAddress(*recoveredPub2)
 	if addr != recoveredAddr2 {
-		t.Errorf("Address mismatch: want: %x have: %x", addr, recoveredAddr2)
+		t.Errorf("Id mismatch: want: %x have: %x", addr, recoveredAddr2)
 	}
 }
 

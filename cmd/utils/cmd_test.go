@@ -31,7 +31,7 @@ func TestImportChain(t *testing.T) {
 		// Full block-chain requested
 
 		blocks, _ := core.GenerateChain(params.TestChainConfig, types.NewBlockWithHeader(genesisBlock.Header()), cbft, sdb, 100, func(i int, b *core.BlockGen) {
-			b.SetCoinbase(common.Address{0: byte(12), 19: byte(i)})
+			b.SetCoinbase(common.Id{0: byte(12), 19: byte(i)})
 		})
 
 		_, err = chain1.InsertChain(blocks)

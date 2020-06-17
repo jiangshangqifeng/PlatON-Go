@@ -106,7 +106,7 @@ func newTester(t *testing.T, confOverride func(*eth.Config)) *tester {
 	}
 	snapshotdb.SetDBPathWithNode(stack.ResolvePath(snapshotdb.DBPath))
 	//ethConf := &eth.Config{
-	//	Genesis:   core.DeveloperGenesisBlock(15, common.Address{}),
+	//	Genesis:   core.DeveloperGenesisBlock(15, common.Id{}),
 	//}
 	ethConf := &eth.DefaultConfig
 	ethConf.Genesis = core.DefaultGrapeGenesisBlock()

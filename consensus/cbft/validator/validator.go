@@ -20,6 +20,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"github.com/PlatONnetwork/PlatON-Go/p2p/enode"
 	"sync"
 
 	"github.com/PlatONnetwork/PlatON-Go/core/state"
@@ -37,7 +38,6 @@ import (
 	"github.com/PlatONnetwork/PlatON-Go/crypto/bls"
 	"github.com/PlatONnetwork/PlatON-Go/event"
 	"github.com/PlatONnetwork/PlatON-Go/log"
-	"github.com/PlatONnetwork/PlatON-Go/p2p/discover"
 	"github.com/PlatONnetwork/PlatON-Go/params"
 	"github.com/PlatONnetwork/PlatON-Go/rlp"
 )
@@ -54,7 +54,7 @@ func newValidators(nodes []params.CbftNode, validBlockNumber uint64) *cbfttypes.
 
 		vds.Nodes[node.Node.ID()] = &cbfttypes.ValidateNode{
 			Index:     uint32(i),
-			Address:   crypto.PubkeyToNodeAddress(*pubkey),
+			Id:        crypto.PubkeyToNodeAddress(*pubkey),
 			PubKey:    pubkey,
 			NodeID:    node.Node.ID(),
 			BlsPubKey: &blsPubKey,
@@ -213,11 +213,11 @@ func (ia *InnerAgency) GetValidator(blockNumber uint64) (v *cbfttypes.Validators
 	var validators cbfttypes.Validators
 	validators.Nodes = make(cbfttypes.ValidateNodeMap, len(vds.ValidateNodes))
 	for _, node := range vds.ValidateNodes {
-		pubkey, _ := node.NodeID.Pubkey()
+		pubkey, _ := node.Pubkey()
 		blsPubKey := node.BlsPubKey
 		validators.Nodes[node.NodeID] = &cbfttypes.ValidateNode{
 			Index:     uint32(node.Index),
-			Address:   node.Address,
+			Id:        node.Id,
 			PubKey:    pubkey,
 			NodeID:    node.NodeID,
 			BlsPubKey: &blsPubKey,

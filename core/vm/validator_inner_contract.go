@@ -17,20 +17,19 @@
 package vm
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
-
-	"bytes"
+	"github.com/PlatONnetwork/PlatON-Go/p2p/discv5"
+	"github.com/PlatONnetwork/PlatON-Go/p2p/enode"
 
 	"encoding/json"
 
 	"encoding/binary"
 
 	"github.com/PlatONnetwork/PlatON-Go/common"
-	"github.com/PlatONnetwork/PlatON-Go/crypto"
 	"github.com/PlatONnetwork/PlatON-Go/crypto/bls"
 	"github.com/PlatONnetwork/PlatON-Go/log"
-	"github.com/PlatONnetwork/PlatON-Go/p2p/discover"
 	"github.com/PlatONnetwork/PlatON-Go/params"
 	"github.com/PlatONnetwork/PlatON-Go/rlp"
 )
@@ -46,10 +45,10 @@ const (
 )
 
 type ValidateNode struct {
-	Index     uint               `json:"index"`
-	NodeID    enode.ID           `json:"nodeID"`
-	Address   common.NodeAddress `json:"-"`
-	BlsPubKey bls.PublicKey      `json:"blsPubKey"`
+	Index     uint          `json:"index"`
+	NodeID    discv5.NodeID `json:"nodeID"`
+	Id        enode.ID      `json:"-"`
+	BlsPubKey bls.PublicKey `json:"blsPubKey"`
 }
 
 type NodeList []*ValidateNode
@@ -57,7 +56,7 @@ type NodeList []*ValidateNode
 func (nl *NodeList) String() string {
 	s := ""
 	for _, v := range *nl {
-		s = s + fmt.Sprintf("{Index: %d NodeID: %s Address: %s blsPubKey: %s},", v.Index, v.NodeID, v.Address.String(), fmt.Sprintf("%x", v.BlsPubKey.Serialize()))
+		s = s + fmt.Sprintf("{Index: %d NodeID: %s Id: %s blsPubKey: %s},", v.Index, v.NodeID, v.Id.String(), fmt.Sprintf("%x", v.BlsPubKey.Serialize()))
 	}
 	return s
 }
@@ -112,7 +111,7 @@ func (vic *validatorInnerContract) UpdateValidators(validators *Validators) erro
 			log.Error("Get pubkey from nodeID fail", "error", err)
 			return err
 		}
-		node.Address = crypto.PubkeyToNodeAddress(*pubkey)
+		node.Id = enode.PubkeyToIDV4(pubkey)
 		newVds.ValidateNodes = append(newVds.ValidateNodes, node)
 	}
 	log.Debug("Update validators", "validators", newVds.String(), "address", vic.Contract.Address())

@@ -376,23 +376,23 @@ var testCase = []*Case{
 			config: Config{WasmType: Wagon},
 			evm: &EVM{
 				Context: Context{
-					CanTransfer: func(db StateDB, addr common.Address, amount *big.Int) bool {
+					CanTransfer: func(db StateDB, addr common.Id, amount *big.Int) bool {
 						return db.GetBalance(addr).Cmp(amount) >= 0
 					},
-					Transfer: func(db StateDB, sender, recipient common.Address, amount *big.Int) {
+					Transfer: func(db StateDB, sender, recipient common.Id, amount *big.Int) {
 						db.SubBalance(sender, amount)
 						db.AddBalance(recipient, amount)
 					},
 					Ctx: context.TODO(),
 				},
 				StateDB: &mock.MockStateDB{
-					Balance: map[common.Address]*big.Int{
+					Balance: map[common.Id]*big.Int{
 						addr1: big.NewInt(2000),
 						addr2: big.NewInt(1000),
 					},
-					State:    map[common.Address]map[string][]byte{},
-					Code:     map[common.Address][]byte{},
-					CodeHash: map[common.Address][]byte{},
+					State:    map[common.Id]map[string][]byte{},
+					Code:     map[common.Id][]byte{},
+					CodeHash: map[common.Id][]byte{},
 				}},
 			contract: &Contract{self: &AccountRef{1, 2, 3}, Gas: 1000000, Code: WasmInterp.Bytes()},
 			Input:    queryContractInput(),

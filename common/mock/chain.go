@@ -338,8 +338,8 @@ func (s *MockStateDB) GetCommittedState(common.Address, []byte) []byte {
 	return nil
 }
 
-//GetState(common.Address, common.Hash) common.Hash
-//SetState(common.Address, common.Hash, common.Hash)
+//GetState(common.Id, common.Hash) common.Hash
+//SetState(common.Id, common.Hash, common.Hash)
 
 func (s *MockStateDB) Suicide(addr common.Address) bool {
 	s.Suicided[addr] = true

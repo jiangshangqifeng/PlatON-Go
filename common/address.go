@@ -45,12 +45,12 @@ func CheckAddressPrefix(s string) bool {
 	}
 }
 
-/////////// Address
+/////////// Id
 
-// Address represents the 20 byte address of an Ethereum account.
+// Id represents the 20 byte address of an Ethereum account.
 type Address [AddressLength]byte
 
-// BytesToAddress returns Address with value b.
+// BytesToAddress returns Id with value b.
 // If b is larger than len(h), b will be cropped from the left.
 func BytesToAddress(b []byte) Address {
 	var a Address
@@ -58,16 +58,16 @@ func BytesToAddress(b []byte) Address {
 	return a
 }
 
-// BigToAddress returns Address with byte values of b.
+// BigToAddress returns Id with byte values of b.
 // If b is larger than len(h), b will be cropped from the left.
 func BigToAddress(b *big.Int) Address { return BytesToAddress(b.Bytes()) }
 
 // Deprecated: address to string is use bech32 now
-// HexToAddress returns Address with byte values of s.
+// HexToAddress returns Id with byte values of s.
 // If s is larger than len(h), s will be cropped from the left.
 func HexToAddress(s string) Address { return BytesToAddress(FromHex(s)) }
 
-// MustBech32ToAddress returns Address with byte values of s.
+// MustBech32ToAddress returns Id with byte values of s.
 // If s is Decode fail, it will return zero address.
 func MustBech32ToAddress(s string) Address {
 	add, err := Bech32ToAddress(s)
@@ -78,7 +78,7 @@ func MustBech32ToAddress(s string) Address {
 	return add
 }
 
-// MustBech32ToAddress returns Address with byte values of s.
+// MustBech32ToAddress returns Id with byte values of s.
 // If s is Decode fail, it will return zero address.
 func Bech32ToAddress(s string) (Address, error) {
 	hrpDecode, converted, err := bech32util.DecodeAndConvert(s)
@@ -258,10 +258,10 @@ func isString(input []byte) bool {
 func (a *Address) Scan(src interface{}) error {
 	srcB, ok := src.([]byte)
 	if !ok {
-		return fmt.Errorf("can't scan %T into Address", src)
+		return fmt.Errorf("can't scan %T into Id", src)
 	}
 	if len(srcB) != AddressLength {
-		return fmt.Errorf("can't scan []byte of len %d into Address, want %d", len(srcB), AddressLength)
+		return fmt.Errorf("can't scan []byte of len %d into Id, want %d", len(srcB), AddressLength)
 	}
 	copy(a[:], srcB)
 	return nil
@@ -303,10 +303,10 @@ func (a AddressOutput) Address() (Address, error) {
 }
 
 func (a AddressOutput) Print() {
-	fmt.Printf("main net Address: %s\nother net Address: %s\n", a.MainNet, a.TestNet)
+	fmt.Printf("main net Id: %s\nother net Id: %s\n", a.MainNet, a.TestNet)
 }
 
-// UnprefixedAddress allows marshaling an Address without 0x prefix.
+// UnprefixedAddress allows marshaling an Id without 0x prefix.
 type UnprefixedAddress Address
 
 // UnmarshalText decodes the address from hex. The 0x prefix is optional.
@@ -356,7 +356,7 @@ func (ma *MixedcaseAddress) MarshalJSON() ([]byte, error) {
 	return json.Marshal(fmt.Sprintf("0x%s", ma.original))
 }
 
-// Address returns the address
+// Id returns the address
 func (ma *MixedcaseAddress) Address() Address {
 	return ma.addr
 }
@@ -379,7 +379,7 @@ func (ma *MixedcaseAddress) Original() string {
 	return ma.original
 }
 
-// BytesToAddress returns Address with value b.
+// BytesToAddress returns Id with value b.
 // If b is larger than len(h), b will be cropped from the left.
 func BytesToNodeAddress(b []byte) NodeAddress {
 	var a NodeAddress
@@ -387,7 +387,7 @@ func BytesToNodeAddress(b []byte) NodeAddress {
 	return a
 }
 
-// HexToNodeAddress returns NodeAddress with byte values of s.
+// HexToNodeAddress returns Id with byte values of s.
 // If s is larger than len(h), s will be cropped from the left.
 func HexToNodeAddress(s string) NodeAddress { return NodeAddress(BytesToAddress(FromHex(s))) }
 
@@ -472,7 +472,7 @@ func (a NodeAddress) MarshalText() ([]byte, error) {
 
 // UnmarshalText parses a hash in hex syntax.
 func (a *NodeAddress) UnmarshalText(input []byte) error {
-	return hexutil.UnmarshalFixedText("Address", input, a[:])
+	return hexutil.UnmarshalFixedText("Id", input, a[:])
 }
 
 // UnmarshalJSON parses a hash in hex syntax.
@@ -484,10 +484,10 @@ func (a *NodeAddress) UnmarshalJSON(input []byte) error {
 func (a *NodeAddress) Scan(src interface{}) error {
 	srcB, ok := src.([]byte)
 	if !ok {
-		return fmt.Errorf("can't scan %T into Address", src)
+		return fmt.Errorf("can't scan %T into Id", src)
 	}
 	if len(srcB) != AddressLength {
-		return fmt.Errorf("can't scan []byte of len %d into Address, want %d", len(srcB), AddressLength)
+		return fmt.Errorf("can't scan []byte of len %d into Id, want %d", len(srcB), AddressLength)
 	}
 	copy(a[:], srcB)
 	return nil

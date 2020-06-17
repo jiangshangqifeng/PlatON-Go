@@ -213,14 +213,14 @@ func TestAddress_Scan(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			a := &Address{}
 			if err := a.Scan(tt.args.src); (err != nil) != tt.wantErr {
-				t.Errorf("Address.Scan() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Id.Scan() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
 			if !tt.wantErr {
 				for i := range a {
 					if a[i] != tt.args.src.([]byte)[i] {
 						t.Errorf(
-							"Address.Scan() didn't scan the %d src correctly (have %X, want %X)",
+							"Id.Scan() didn't scan the %d src correctly (have %X, want %X)",
 							i, a[i], tt.args.src.([]byte)[i],
 						)
 					}
@@ -254,11 +254,11 @@ func TestAddress_Value(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := tt.a.Value()
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Address.Value() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Id.Value() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Address.Value() = %v, want %v", got, tt.want)
+				t.Errorf("Id.Value() = %v, want %v", got, tt.want)
 			}
 		})
 	}

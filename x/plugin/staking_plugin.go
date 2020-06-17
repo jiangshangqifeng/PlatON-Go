@@ -21,6 +21,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"github.com/PlatONnetwork/PlatON-Go/p2p/enode"
 	"math/big"
 	"sort"
 	"strconv"
@@ -44,7 +45,6 @@ import (
 	"github.com/PlatONnetwork/PlatON-Go/crypto/vrf"
 	"github.com/PlatONnetwork/PlatON-Go/event"
 	"github.com/PlatONnetwork/PlatON-Go/log"
-	"github.com/PlatONnetwork/PlatON-Go/p2p/discover"
 	"github.com/PlatONnetwork/PlatON-Go/x/staking"
 	"github.com/PlatONnetwork/PlatON-Go/x/xcom"
 	"github.com/PlatONnetwork/PlatON-Go/x/xutil"
@@ -111,11 +111,11 @@ func (sk *StakingPlugin) BeginBlock(blockHash common.Hash, header *types.Header,
 			return err
 		}
 		for _, v := range current.Arr {
-			canOld, err := sk.GetCanMutable(blockHash, v.NodeAddress)
+			canOld, err := sk.GetCanMutable(blockHash, v.Id)
 			if snapshotdb.NonDbNotFoundErr(err) || canOld.IsEmpty() {
-				log.Error("Failed to get candidate info on stakingPlugin BeginBlock", "nodeAddress", v.NodeAddress.String(),
+				log.Error("Failed to get candidate info on stakingPlugin BeginBlock", "nodeAddress", v.Id.String(),
 					"blockNumber", blockNumber, "blockHash", blockHash.TerminalString(), "err", err)
-				return fmt.Errorf("Failed to get candidate info on stakingPlugin BeginBlock, nodeAddress:%s, blockNumber:%d, blockHash:%s", v.NodeAddress.String(), blockNumber, blockHash.TerminalString())
+				return fmt.Errorf("Failed to get candidate info on stakingPlugin BeginBlock, nodeAddress:%s, blockNumber:%d, blockHash:%s", v.Id.String(), blockNumber, blockHash.TerminalString())
 			}
 			if canOld.IsInvalid() {
 				continue
@@ -131,8 +131,8 @@ func (sk *StakingPlugin) BeginBlock(blockHash common.Hash, header *types.Header,
 				changed = true
 			}
 			if changed {
-				if err = sk.db.SetCanMutableStore(blockHash, v.NodeAddress, canOld); err != nil {
-					log.Error("Failed to editCandidate on stakingPlugin BeginBlock", "nodeAddress", v.NodeAddress.String(),
+				if err = sk.db.SetCanMutableStore(blockHash, v.Id, canOld); err != nil {
+					log.Error("Failed to editCandidate on stakingPlugin BeginBlock", "nodeAddress", v.Id.String(),
 						"blockNumber", blockNumber, "blockHash", blockHash.TerminalString(), "err", err)
 					return err
 				}
@@ -248,12 +248,12 @@ func (sk *StakingPlugin) GetCandidateInfo(blockHash common.Hash, addr common.Nod
 	return sk.db.GetCandidateStore(blockHash, addr)
 }
 
-func (sk *StakingPlugin) GetCanBase(blockHash common.Hash, addr common.NodeAddress) (*staking.CandidateBase, error) {
-	return sk.db.GetCanBaseStore(blockHash, addr)
+func (sk *StakingPlugin) GetCanBase(blockHash common.Hash, id enode.ID) (*staking.CandidateBase, error) {
+	return sk.db.GetCanBaseStore(blockHash, id)
 }
 
-func (sk *StakingPlugin) GetCanMutable(blockHash common.Hash, addr common.NodeAddress) (*staking.CandidateMutable, error) {
-	return sk.db.GetCanMutableStore(blockHash, addr)
+func (sk *StakingPlugin) GetCanMutable(blockHash common.Hash, id enode.ID) (*staking.CandidateMutable, error) {
+	return sk.db.GetCanMutableStore(blockHash, id)
 }
 
 func (sk *StakingPlugin) GetCandidateCompactInfo(blockHash common.Hash, blockNumber uint64, addr common.NodeAddress) (*staking.CandidateHex, error) {
@@ -1173,7 +1173,7 @@ func (sk *StakingPlugin) ElectNextVerifierList(blockHash common.Hash, blockNumbe
 		}
 
 		val := &staking.Validator{
-			NodeAddress:     addr,
+			Id:              addr,
 			NodeId:          canBase.NodeId,
 			BlsPubKey:       canBase.BlsPubKey,
 			ProgramVersion:  canBase.ProgramVersion,
@@ -1219,11 +1219,11 @@ func (sk *StakingPlugin) GetVerifierCandidateInfo(blockHash common.Hash, blockNu
 
 	for i, v := range verifierList.Arr {
 		//var can *staking.CandidateBase
-		c, err := sk.db.GetCandidateStore(blockHash, v.NodeAddress)
+		c, err := sk.db.GetCandidateStore(blockHash, v.Id)
 		if nil != err {
 			log.Error("Failed to call GetVerifierList, Query Candidate Store info is failed",
 				"blockNumber", blockNumber, "blockHash", blockHash.Hex(), "nodeId", v.NodeId.String(),
-				"canAddr", v.NodeAddress.Hex(), "err", err.Error())
+				"canAddr", v.Id.Hex(), "err", err.Error())
 			return nil, err
 		}
 		queue[i] = c
@@ -1246,27 +1246,27 @@ func (sk *StakingPlugin) GetVerifierList(blockHash common.Hash, blockNumber uint
 	queue := make(staking.ValidatorExQueue, len(verifierList.Arr))
 
 	for i, v := range verifierList.Arr {
-		//can, err := sk.GetCandidateInfo(blockHash, v.NodeAddress)
+		//can, err := sk.GetCandidateInfo(blockHash, v.Id)
 
 		//var can *staking.CandidateBase
 		var can *staking.Candidate
 		if !isCommit {
-			//c, err := sk.db.GetCanBaseStore(blockHash, v.NodeAddress)
-			c, err := sk.db.GetCandidateStore(blockHash, v.NodeAddress)
+			//c, err := sk.db.GetCanBaseStore(blockHash, v.Id)
+			c, err := sk.db.GetCandidateStore(blockHash, v.Id)
 			if nil != err {
 				log.Error("Failed to call GetVerifierList, Query Candidate Store info is failed",
 					"blockNumber", blockNumber, "blockHash", blockHash.Hex(), "nodeId", v.NodeId.String(),
-					"canAddr", v.NodeAddress.Hex(), "isCommit", isCommit, "err", err.Error())
+					"canAddr", v.Id.Hex(), "isCommit", isCommit, "err", err.Error())
 				return nil, err
 			}
 			can = c
 		} else {
-			//c, err := sk.db.GetCanBaseStoreByIrr(v.NodeAddress)
-			c, err := sk.db.GetCandidateStoreByIrr(v.NodeAddress)
+			//c, err := sk.db.GetCanBaseStoreByIrr(v.Id)
+			c, err := sk.db.GetCandidateStoreByIrr(v.Id)
 			if nil != err {
 				log.Error("Failed to call GetVerifierList, Query Candidate Store info is failed",
 					"blockNumber", blockNumber, "blockHash", blockHash.Hex(), "nodeId", v.NodeId.String(),
-					"canAddr", v.NodeAddress.Hex(), "isCommit", isCommit, "err", err.Error())
+					"canAddr", v.Id.Hex(), "isCommit", isCommit, "err", err.Error())
 				return nil, err
 			}
 			can = c
@@ -1348,20 +1348,20 @@ func (sk *StakingPlugin) GetCandidateONEpoch(blockHash common.Hash, blockNumber 
 	for i, v := range verifierList.Arr {
 		var can *staking.Candidate
 		if !isCommit {
-			c, err := sk.db.GetCandidateStore(blockHash, v.NodeAddress)
+			c, err := sk.db.GetCandidateStore(blockHash, v.Id)
 			if nil != err {
 				log.Error("Failed to call GetCandidateONEpoch, Quey candidate info is failed",
 					"blockNumber", blockNumber, "blockHash", blockHash.Hex(), "nodeId", v.NodeId.String(),
-					"canAddr", v.NodeAddress.Hex(), "isCommit", isCommit, "err", err.Error())
+					"canAddr", v.Id.Hex(), "isCommit", isCommit, "err", err.Error())
 				return nil, err
 			}
 			can = c
 		} else {
-			c, err := sk.db.GetCandidateStoreByIrr(v.NodeAddress)
+			c, err := sk.db.GetCandidateStoreByIrr(v.Id)
 			if nil != err {
 				log.Error("Failed to call GetCandidateONEpoch, Quey candidate info is failed",
 					"blockNumber", blockNumber, "blockHash", blockHash.Hex(), "nodeId", v.NodeId.String(),
-					"canAddr", v.NodeAddress.Hex(), "isCommit", isCommit, "err", err.Error())
+					"canAddr", v.Id.Hex(), "isCommit", isCommit, "err", err.Error())
 				return nil, err
 			}
 			can = c
@@ -1412,21 +1412,21 @@ func (sk *StakingPlugin) GetValidatorList(blockHash common.Hash, blockNumber uin
 		//var can *staking.CandidateBase
 		var can *staking.Candidate
 		if !isCommit {
-			//c, err := sk.db.GetCanBaseStore(blockHash, v.NodeAddress)
-			c, err := sk.db.GetCandidateStore(blockHash, v.NodeAddress)
+			//c, err := sk.db.GetCanBaseStore(blockHash, v.Id)
+			c, err := sk.db.GetCandidateStore(blockHash, v.Id)
 			if nil != err {
 				log.Error("Failed to call GetValidatorList, Quey Candidate Store info is failed",
 					"blockNumber", blockNumber, "blockHash", blockHash.Hex(), "nodeId", v.NodeId.String(),
-					"canAddr", v.NodeAddress.Hex(), "isCommit", isCommit, "err", err.Error())
+					"canAddr", v.Id.Hex(), "isCommit", isCommit, "err", err.Error())
 				return nil, err
 			}
 			can = c
 		} else {
-			c, err := sk.db.GetCandidateStoreByIrr(v.NodeAddress)
+			c, err := sk.db.GetCandidateStoreByIrr(v.Id)
 			if nil != err {
 				log.Error("Failed to call GetValidatorList, Quey Candidate Store info is failed",
 					"blockNumber", blockNumber, "blockHash", blockHash.Hex(), "nodeId", v.NodeId.String(),
-					"canAddr", v.NodeAddress.Hex(), "isCommit", isCommit, "err", err.Error())
+					"canAddr", v.Id.Hex(), "isCommit", isCommit, "err", err.Error())
 				return nil, err
 			}
 			can = c
@@ -1492,21 +1492,21 @@ func (sk *StakingPlugin) GetCandidateONRound(blockHash common.Hash, blockNumber 
 
 		if !isCommit {
 
-			c, err := sk.db.GetCandidateStore(blockHash, v.NodeAddress)
+			c, err := sk.db.GetCandidateStore(blockHash, v.Id)
 			if nil != err {
 				log.Error("Failed to call GetCandidateONRound, Quey candidate info is failed",
 					"blockNumber", blockNumber, "blockHash", blockHash.Hex(), "nodeId", v.NodeId.String(),
-					"canAddr", v.NodeAddress.Hex(), "isCommit", isCommit, "err", err.Error())
+					"canAddr", v.Id.Hex(), "isCommit", isCommit, "err", err.Error())
 				return nil, err
 			}
 
 			can = c
 		} else {
-			c, err := sk.db.GetCandidateStoreByIrr(v.NodeAddress)
+			c, err := sk.db.GetCandidateStoreByIrr(v.Id)
 			if nil != err {
 				log.Error("Failed to call GetCandidateONRound, Quey candidate info is failed",
 					"blockNumber", blockNumber, "blockHash", blockHash.Hex(), "nodeId", v.NodeId.String(),
-					"canAddr", v.NodeAddress.Hex(), "isCommit", isCommit, "err", err.Error())
+					"canAddr", v.Id.Hex(), "isCommit", isCommit, "err", err.Error())
 				return nil, err
 			}
 			can = c
@@ -1642,7 +1642,7 @@ func (sk *StakingPlugin) GetRelatedListByDelAddr(blockHash common.Hash, addr com
 
 		prefixLen := len(staking.DelegateKeyPrefix)
 
-		nodeIdLen := enode.IDBits / 8
+		nodeIdLen := 32
 
 		// delAddr
 		delAddrByte := key[prefixLen : prefixLen+common.AddressLength]
@@ -1650,7 +1650,7 @@ func (sk *StakingPlugin) GetRelatedListByDelAddr(blockHash common.Hash, addr com
 
 		// nodeId
 		nodeIdByte := key[prefixLen+common.AddressLength : prefixLen+common.AddressLength+nodeIdLen]
-		nodeId := discover.MustBytesID(nodeIdByte)
+		nodeId := enode.MustBytesID(nodeIdByte)
 
 		// stakenum
 		stakeNumByte := key[prefixLen+common.AddressLength+nodeIdLen:]
@@ -2008,12 +2008,12 @@ func randomOrderValidatorQueue(blockNumber uint64, parentHash common.Hash, queue
 
 	orderList := make(randomOrderValidatorList, len(queue))
 	for i, v := range queue {
-		value := new(big.Int).Xor(new(big.Int).SetBytes(v.NodeAddress.Bytes()), new(big.Int).SetBytes(preNonces[i][:common.AddressLength]))
+		value := new(big.Int).Xor(new(big.Int).SetBytes(v.Id.Bytes()), new(big.Int).SetBytes(preNonces[i][:common.AddressLength]))
 		orderList[i] = &randomOrderValidator{
 			validator: v,
 			value:     value,
 		}
-		log.Debug("Call randomOrderValidatorQueue xor", "nodeId", v.NodeId.TerminalString(), "nodeAddress", v.NodeAddress.Hex(), "nonce", hexutil.Encode(preNonces[i]), "xorValue", value)
+		log.Debug("Call randomOrderValidatorQueue xor", "nodeId", v.NodeId.TerminalString(), "nodeAddress", v.Id.Hex(), "nonce", hexutil.Encode(preNonces[i]), "xorValue", value)
 	}
 
 	frontPart := orderList[:xcom.ShiftValidatorNum()]
@@ -2547,13 +2547,13 @@ func buildCbftValidators(start uint64, arr staking.ValidatorQueue) *cbfttypes.Va
 
 		vn := &cbfttypes.ValidateNode{
 			Index:     uint32(i),
-			Address:   v.NodeAddress,
+			Id:        v.Id,
 			PubKey:    pubKey,
 			NodeID:    v.NodeId,
 			BlsPubKey: blsPk,
 		}
 
-		valMap[v.NodeId] = vn
+		valMap[v.Id] = vn
 	}
 
 	res := &cbfttypes.Validators{
@@ -2835,7 +2835,7 @@ func probabilityElection(validatorList staking.ValidatorQueue, shiftLen int, cur
 		sv.x = x
 
 		log.Debug("Call probabilityElection, calculated probability on Election", "nodeId", sv.v.NodeId.TerminalString(),
-			"addr", sv.v.NodeAddress.Hex(), "index", index, "currentNonce",
+			"addr", sv.v.Id.Hex(), "index", index, "currentNonce",
 			hex.EncodeToString(currentNonce), "preNonce", hex.EncodeToString(preNonces[index]),
 			"target", target, "targetP", targetP, "weight", sv.weights, "x", x, "version", sv.version,
 			"blockNumber", sv.blockNumber, "txIndex", sv.txIndex)
@@ -3460,7 +3460,7 @@ func (sk *StakingPlugin) storeRoundValidatorAddrs(blockNumber uint64, blockHash 
 	newKey := staking.GetRoundValAddrArrKey(nextRound)
 	newValue := make([]common.NodeAddress, 0, len(array))
 	for _, v := range array {
-		newValue = append(newValue, v.NodeAddress)
+		newValue = append(newValue, v.Id)
 	}
 	if err := sk.db.StoreRoundValidatorAddrs(blockHash, newKey, newValue); nil != err {
 		log.Error("Failed to StoreRoundValidatorAddrs", "blockHash", blockHash.TerminalString(), "nextStart", nextStart,

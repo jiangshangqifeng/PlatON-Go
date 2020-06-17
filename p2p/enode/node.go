@@ -143,6 +143,26 @@ func (n ID) Bytes() []byte {
 	return n[:]
 }
 
+// BytesID converts a byte slice to a ID
+func BytesID(b []byte) (ID, error) {
+	var id ID
+	if len(b) != len(id) {
+		return id, fmt.Errorf("wrong length, want %d bytes", len(id))
+	}
+	copy(id[:], b)
+	return id, nil
+}
+
+// MustBytesID converts a byte slice to a ID.
+// It panics if the byte slice is not a valid ID.
+func MustBytesID(b []byte) ID {
+	id, err := BytesID(b)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // ID prints as a long hexadecimal number.
 func (n ID) String() string {
 	return fmt.Sprintf("%x", n[:])

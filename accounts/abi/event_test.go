@@ -265,14 +265,14 @@ func TestEventTupleUnpack(t *testing.T) {
 		&[]interface{}{new(int), 0, 0},
 		&[]interface{}{},
 		jsonEventPledge,
-		"abi: cannot unmarshal common.Address in to int",
+		"abi: cannot unmarshal common.Id in to int",
 		"Can not unpack Pledge event into slice with wrong types",
 	}, {
 		pledgeData1,
 		&BadEventPledge{},
 		&BadEventPledge{},
 		jsonEventPledge,
-		"abi: cannot unmarshal common.Address in to string",
+		"abi: cannot unmarshal common.Id in to string",
 		"Can not unpack Pledge event into struct with wrong filed types",
 	}, {
 		pledgeData1,

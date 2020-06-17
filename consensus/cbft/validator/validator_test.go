@@ -148,7 +148,7 @@ func TestValidators(t *testing.T) {
 
 	validator, err = vds.FindNodeByID(nodes[1].Node.ID())
 	assert.True(t, err == nil, "get node index and address fail")
-	assert.Equal(t, validator.Address, addrN1)
+	assert.Equal(t, validator.Id, addrN1)
 	assert.Equal(t, validator.Index, uint32(1))
 
 	idxN1, err := vds.FindNodeByAddress(addrN1)
@@ -445,9 +445,9 @@ func TestValidatorPool(t *testing.T) {
 
 	vds := newValidators(nodes, 0)
 	node0, _ := vds.FindNodeByIndex(2)
-	node, err = validatorPool.GetValidatorByAddr(0, node0.Address)
+	node, err = validatorPool.GetValidatorByAddr(0, node0.Id)
 	assert.Nil(t, err)
-	assert.Equal(t, node.Address, node0.Address)
+	assert.Equal(t, node.Id, node0.Id)
 
 	_, err = validatorPool.GetValidatorByAddr(0, common.NodeAddress{})
 	assert.Equal(t, err, errors.New("invalid address"))

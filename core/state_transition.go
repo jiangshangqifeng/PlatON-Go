@@ -62,7 +62,7 @@ type StateTransition struct {
 // Message represents a message sent to a contract.
 type Message interface {
 	From() common.Address
-	//FromFrontier() (common.Address, error)
+	//FromFrontier() (common.Id, error)
 	To() *common.Address
 
 	GasPrice() *big.Int

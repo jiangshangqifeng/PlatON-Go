@@ -23,7 +23,7 @@ import (
 
 	"github.com/PlatONnetwork/PlatON-Go/common"
 	"github.com/PlatONnetwork/PlatON-Go/common/math"
-	"github.com/PlatONnetwork/PlatON-Go/p2p/discover"
+	"github.com/PlatONnetwork/PlatON-Go/p2p/enode"
 )
 
 const (
@@ -64,15 +64,15 @@ var (
 
 // CanBase ...
 
-func CanBaseKeyByAddr(addr common.NodeAddress) []byte {
-	return append(CanBaseKeyPrefix, addr.Bytes()...)
+func CanBaseKeyByID(id enode.ID) []byte {
+	return append(CanBaseKeyPrefix, id.Bytes()...)
 }
 func CanBaseKeyBySuffix(addr []byte) []byte {
 	return append(CanBaseKeyPrefix, addr...)
 }
 
-func CanMutableKeyByAddr(addr common.NodeAddress) []byte {
-	return append(CanMutableKeyPrefix, addr.Bytes()...)
+func CanMutableKeyByID(id enode.ID) []byte {
+	return append(CanMutableKeyPrefix, id.Bytes()...)
 }
 
 func CanMutableKeyBySuffix(addr []byte) []byte {
@@ -163,7 +163,7 @@ func DecodeDelegateKey(key []byte) (delAddr common.Address, nodeId enode.ID, sta
 	delAddrLength := len(delAddr) + delegateKeyPrefixLength
 	nodeIdLength := len(nodeId) + delAddrLength
 	delAddr = common.BytesToAddress(key[delegateKeyPrefixLength:delAddrLength])
-	nodeId = discover.MustBytesID(key[delAddrLength:nodeIdLength])
+	nodeId = enode.MustBytesID(key[delAddrLength:nodeIdLength])
 	stakeBlockNumber = common.BytesToUint64(key[nodeIdLength:])
 	return
 }
